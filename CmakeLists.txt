@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.25)
+project(Neural_Nets_Bettonte_Lacagnina_Lentini)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(.)
+
+add_executable(Neural_Nets_Bettonte_Lacagnina_Lentini
+        main.cpp)
+
