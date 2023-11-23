@@ -1,4 +1,5 @@
 #include <iostream>
+#include "matrixMult.hpp"
 
 
 int main (){
