@@ -9,8 +9,9 @@
 */
 int main (){
 
- 
+    int unrollFactor = 4;
     size_t rows, inners, columns;
+    
     char type;
     
     //ask for rows, inners and columns (dimensions of matrices)
@@ -18,6 +19,7 @@ int main (){
     std::cout << "rows: " ; std::cin >> rows; 
     std::cout << "inners: " ; std::cin >> inners;
     std::cout << "columns: "; std::cin >> columns;
+    std::cout << "Insert unrollFactor: "; std::cin >> unrollFactor; 
     
     //ask for type of elements (float or double)
     do{
@@ -33,8 +35,13 @@ int main (){
     	auto *right = generateMatrix<float>(inners, columns);
     	float *result = new float[rows * columns];
     	
-    	//headMatrix(left, 5);
+    	
     	naiveMMM(left, right, result, rows, inners, columns);
+    	std::cout << std::endl;
+    	headMatrix(result, 7);
+    	//loopUnrollingMMM(left, right, result,rows, inners, columns, unrollFactor);
+    	std::cout << std::endl;
+    	headMatrix(result, 7);
     	
     	
     	//delete pointers
@@ -49,6 +56,11 @@ int main (){
     	
     	//headMatrix(left, 5);
     	naiveMMM(left, right, result, rows, inners, columns);
+    	std::cout << std::endl;
+    	headMatrix(result, 7);
+    	//loopUnrollingMMM(left, right, result,rows, inners, columns, unrollFactor);
+    	std::cout << std::endl;
+    	headMatrix(result, 7);
     	
     	//delete pointers
     	delete[] left; delete[] right; delete[] result;
