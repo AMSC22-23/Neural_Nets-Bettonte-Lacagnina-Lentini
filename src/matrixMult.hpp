@@ -91,7 +91,7 @@ void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size
     // Ciclo principale
     for (row = 0; row < rows; row++) {
         for (col = 0; col < columns; col++) {
-			result[row * columns + col] = 0;
+			//result[row * columns + col] = 0;
 
         	if(unrollFactor == 4){
             	for (size_t inner = 0; inner < inners - (inners % 4); inner += 4) {

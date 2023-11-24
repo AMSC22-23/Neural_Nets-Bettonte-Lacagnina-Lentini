@@ -11,6 +11,15 @@
 #include <chrono>
 
 template<typename T>
+void printMatrix(T* matrix, size_t rows, size_t cols)
+{
+	for(int i = 0; i < rows * cols; i++){
+		if(i % cols == 0)
+			std::cout << std::endl;
+		std::cout << matrix[i] << "  ";
+	}
+}
+template<typename T>
 T* generateMatrix(size_t rows, size_t cols) 
 { 
 	auto currentTime = std::chrono::high_resolution_clock::now();
@@ -35,3 +44,21 @@ void headMatrix(T* matrix, int index){
 		std::cout << matrix[i] << "  ";
     }
 }
+
+template<typename T>
+void resetMatrix(T* matrix, int len){
+	int i;
+	for(i = 0; i < len; i++)
+		matrix[i] = 0.0;
+}
+
+
+
+
+
+
+
+
+
+
+
