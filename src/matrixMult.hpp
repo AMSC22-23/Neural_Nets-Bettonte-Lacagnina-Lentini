@@ -151,7 +151,18 @@ void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inne
             }
         }
     }
-    if(rows % tileSize != 0) {
-        
+ // Handle remaining rows and columns
+    if(rows % tileSize != 0 || columns % tileSize != 0) {
+        int startRow = (rows / tileSize) * tileSize;
+        int startColumn = (columns / tileSize) * tileSize;
+        for(int row = startRow; row < rows; row++) {
+            for(int column = startColumn; column < columns; column++) {
+                for(int inner = 0; inner < inners; inner++) {
+                    result[row * columns + column] +=
+                        left[row * inners + inner] * right[inner * columns + column];
+                }
+            }
+        }
     }
+
 }
