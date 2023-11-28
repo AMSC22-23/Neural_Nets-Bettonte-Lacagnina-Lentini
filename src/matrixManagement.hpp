@@ -1,14 +1,25 @@
-
-
-/**
- * generate two uni-dimensional arrays of the specified type (float or double) and dimensions
- * @param rows, inners, cols for dimensions of arrays
- * @param type specifies type of elements
-*/
-
 #include <iostream>
 #include <random>
 #include <chrono>
+
+template<typename T>
+void compareMatrix(size_t rows, size_t cols, T* result1, T* result2) {
+
+	size_t size = rows*cols;
+	size_t i = 0;
+
+    for(i = 0; i < size; i++) {
+
+    	if(result1[i] != result2[i])
+        	break;
+
+    }
+
+    if(i == size) 
+		std::cout << "Matrici uguali" << std::endl;
+    else 
+		std::cout << "Matrici diverse" << std::endl;
+}
 
 template<typename T>
 void printMatrix(T* matrix, size_t rows, size_t cols)
@@ -19,6 +30,12 @@ void printMatrix(T* matrix, size_t rows, size_t cols)
 		std::cout << matrix[i] << "  ";
 	}
 }
+
+/**
+ * generate two uni-dimensional arrays of the specified type (float or double) and dimensions
+ * @param rows, inners, cols for dimensions of arrays
+ * @param type specifies type of elements
+*/
 template<typename T>
 T* generateMatrix(size_t rows, size_t cols) 
 { 
@@ -39,7 +56,6 @@ T* generateMatrix(size_t rows, size_t cols)
 
 template<typename T>
 void headMatrix(T* matrix, int index){
-	int i;
 	for (int i = 0; i < index; ++i) {
 		std::cout << matrix[i] << "  ";
     }
@@ -47,8 +63,7 @@ void headMatrix(T* matrix, int index){
 
 template<typename T>
 void resetMatrix(T* matrix, int len){
-	int i;
-	for(i = 0; i < len; i++)
+	for(int i = 0; i < len; i++)
 		matrix[i] = 0.0;
 }
 

@@ -166,3 +166,44 @@ void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inne
     }
 
 }
+
+/**
+ * //TODO
+ * 
+ * @tparam T the type of values contained in the matrices.
+ * 
+ * @param left the left matrix.
+ * @param right the right matrix.
+ * @param result the resulting matrix.
+ * @param rows number of rows of the left matrix.
+ * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
+ * @param columns number of columns of the right matrix.
+ * @param tileSize  //TODO
+*/
+
+template<typename T>
+void ompMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
+#pragma omp parallel for shared(result, left, right, rows, inners, columns, tileSize) default(none) \
+	 collapse(2) num_threads(8)
+  for (size_t rowTile = 0; rowTile < rows; rowTile += 256) {
+    for (size_t columnTile = 0; columnTile < columns; columnTile += 256) {
+      for (size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
+        for (size_t row = rowTile; row < rowTile + 256; row++) {
+          size_t innerTileEnd = std::min(inners, innerTile + tileSize);
+          for (size_t inner = innerTile; inner < innerTileEnd; inner++) {
+            for (size_t col = columnTile; col < columnTile + 256; col++) {
+              result[row * columns + col] += 
+                    left[row * inners + inner] * right[inner * columns + col];
+            }
+
+          }
+
+        }
+
+      }
+      
+    }
+
+  }
+
+}
