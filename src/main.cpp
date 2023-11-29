@@ -36,17 +36,7 @@ int main (){
     if(type == 'f'){
     	auto *left = generateMatrix<float>(rows, columns);
     	auto *right = generateMatrix<float>(inners, columns);
-    	float *result = new float[rows * columns];
-
-      naiveMMM(left, right, result, rows, inners, columns);
-      std::cout << std::endl << std::endl;
-      
-      float *result2 = new float[rows*columns];
-      loopUnrollingMMM(left,right, result2, rows, inners, columns, unrollFactor);
-
-      //ompMMM(left, right, result2, rows, inners, columns, tileSize /*TODO*/ );
-
-      compareMatrix(rows, columns,result,result2);
+      float *result = new float[rows * columns];
 
       testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
     }
@@ -57,67 +47,78 @@ int main (){
     	auto *right = generateMatrix<double>(inners, columns);
     	double *result = new double[rows * columns]; 
 
-      naiveMMM(left, right, result, rows, inners, columns);
-      std::cout << std::endl << std::endl;
-
-      double *result2 = new double[rows*columns];
-      loopUnrollingMMM(left,right, result2, rows, inners, columns, unrollFactor);
-
-      //ompMMM(left, right, result2, rows, inners, columns, tileSize /*TODO*/ );
-
-      compareMatrix(rows, columns,result,result2);
-
       testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
     }
 
     return 0;
 }
 
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize) {
+void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize) {  
 
+  for (auto _ : benchmark::Counter(1)) {
+    resetMatrix(result, rows * columns);  
 
-	benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
-      for (auto _ : state) {
-        naiveMMM(left, right, result, rows, inners, columns);
-      }
-    });
+      benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
+          for (auto _ : state) {
+              naiveMMM(left, right, result, rows, inners, columns);
+          }
+      });
+  }
+
+  for (auto _ : benchmark::Counter(1)) {
+    resetMatrix(result, rows * columns);  
 
       benchmark::RegisterBenchmark("BM_naiveAccMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
-      for (auto _ : state) {
-        naiveAccMMM(left, right, result, rows, inners, columns);
-      }
-    });
+          for (auto _ : state) {
+              naiveAccMMM(left, right, result, rows, inners, columns);
+          }
+      });
+  }
 
-	 benchmark::RegisterBenchmark("BM_cacheFriendlyMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
-      for (auto _ : state) {
-        cacheFriendlyMMM(left, right, result, rows, inners, columns);
-      }
-    });
+  for (auto _ : benchmark::Counter(1)) {
+    resetMatrix(result, rows * columns);  
+
+    benchmark::RegisterBenchmark("BM_cacheFriendlyMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
+          for (auto _ : state) {
+              cacheFriendlyMMM(left, right, result, rows, inners, columns);
+          }
+      });
+  }
 
 
-	benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
-      for (auto _ : state) {
-        tilingMMM(left, right, result, rows, inners, columns, tileSize /*TODO*/ );
-      }
-    });
-	
+	for (auto _ : benchmark::Counter(1)) {
+    resetMatrix(result, rows * columns);  
+
+    benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
+          for (auto _ : state) {
+                tilingMMM(left, right, result, rows, inners, columns);
+          }
+      });
+
+  }
     
-    benchmark::RegisterBenchmark("BM_ompMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
-      for (auto _ : state) {
-        ompMMM(left, right, result, rows, inners, columns, tileSize /*TODO*/ );
-      }
-    });
-    
+  for (auto _ : benchmark::Counter(1)) {
+      resetMatrix(result, rows * columns); 
+
+    benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
+          for (auto _ : state) {
+              loopUnrollingMMM(left, right, result, rows, inners, columns);
+          }
+      });
+  }
   
-    benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns, &unrollFactor](benchmark::State& state){
-      for (auto _ : state) {
-        loopUnrollingMMM(left,right, result, rows, inners, columns, unrollFactor);
-      }
-    });
+  for (auto _ : benchmark::Counter(1)) {
+      resetMatrix(result, rows * columns); 
+
+    benchmark::RegisterBenchmark("BM_ompMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
+          for (auto _ : state) {
+              ompMMM(left, right, result, rows, inners, columns);
+          }
+      });
+
+  }
    
-
-
-    benchmark::RunSpecifiedBenchmarks();
+  benchmark::RunSpecifiedBenchmarks();
     	
     //delete pointers
     delete[] left; delete[] right; delete[] result;
