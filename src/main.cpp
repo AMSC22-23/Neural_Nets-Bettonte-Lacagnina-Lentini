@@ -14,7 +14,7 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
 */
 int main (){
 
-    int unrollFactor = 4;
+    int unrollFactor = 8;
 	  size_t tileSize = 4;
     size_t rows, inners, columns;
     
@@ -39,11 +39,12 @@ int main (){
     	float *result = new float[rows * columns];
 
       naiveMMM(left, right, result, rows, inners, columns);
-      printMatrix(result,rows,columns);
+      std::cout << std::endl << std::endl;
+      
+      float *result2 = new float[rows*columns];
+      loopUnrollingMMM(left,right, result2, rows, inners, columns, unrollFactor);
 
-      float* result2 = new float[rows*columns];
-
-      ompMMM(left, right, result2, rows, inners, columns, tileSize /*TODO*/ );
+      //ompMMM(left, right, result2, rows, inners, columns, tileSize /*TODO*/ );
 
       compareMatrix(rows, columns,result,result2);
 
@@ -57,11 +58,12 @@ int main (){
     	double *result = new double[rows * columns]; 
 
       naiveMMM(left, right, result, rows, inners, columns);
-      printMatrix(result,rows,columns);
+      std::cout << std::endl << std::endl;
 
-      double* result2 = new double[rows*columns];
+      double *result2 = new double[rows*columns];
+      loopUnrollingMMM(left,right, result2, rows, inners, columns, unrollFactor);
 
-      ompMMM(left, right, result2, rows, inners, columns, tileSize /*TODO*/ );
+      //ompMMM(left, right, result2, rows, inners, columns, tileSize /*TODO*/ );
 
       compareMatrix(rows, columns,result,result2);
 
@@ -92,23 +94,27 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
       }
     });
 
-	benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns, &unrollFactor](benchmark::State& state) {
-      for (auto _ : state) {
-        loopUnrollingMMM(left, right, result, rows, inners, columns, unrollFactor /*TODO*/); 
-      }
-    });
 
 	benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
       for (auto _ : state) {
         tilingMMM(left, right, result, rows, inners, columns, tileSize /*TODO*/ );
       }
     });
-
+	
+    
     benchmark::RegisterBenchmark("BM_ompMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
       for (auto _ : state) {
         ompMMM(left, right, result, rows, inners, columns, tileSize /*TODO*/ );
       }
     });
+    
+  
+    benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns, &unrollFactor](benchmark::State& state){
+      for (auto _ : state) {
+        loopUnrollingMMM(left,right, result, rows, inners, columns, unrollFactor);
+      }
+    });
+   
 
 
     benchmark::RunSpecifiedBenchmarks();
