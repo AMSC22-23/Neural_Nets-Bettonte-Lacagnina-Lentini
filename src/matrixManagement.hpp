@@ -53,7 +53,33 @@ void resetMatrix(T* matrix, int len){
 		matrix[i] = 0.0;
 }
 
+template<typename T>
+void printMatrixCSV(const T* matrix, size_t rows, size_t cols) 
+{
+		int i, j;
+		int dimension = rows * cols;
+		std::ofstream file("result.csv");
 
+    if (file.is_open()) {
+        for ( i = 0; i < dimension; i++) {
+            
+            if((i + 1) % cols == 0){
+              file << matrix[i];
+        		  file << std::endl;
+            }
+            else{
+              file << matrix[i];
+              file << ',';
+            }
+        }
+        file.close();
+
+    } else {
+        std::cerr << "File not opened" << std::endl;
+        return; 
+    }
+	return;
+}
 
 
 
