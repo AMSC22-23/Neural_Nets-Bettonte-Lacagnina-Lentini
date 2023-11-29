@@ -2,6 +2,9 @@
 #include <random>
 #include <chrono>
 
+/**
+ * 
+*/
 template<typename T>
 void compareMatrix(size_t rows, size_t cols, T* result1, T* result2) {
 
@@ -21,18 +24,8 @@ void compareMatrix(size_t rows, size_t cols, T* result1, T* result2) {
 		std::cout << "Matrici diverse" << std::endl;
 }
 
-template<typename T>
-void printMatrix(T* matrix, size_t rows, size_t cols)
-{
-	for(int i = 0; i < rows * cols; i++){
-		if(i % cols == 0)
-			std::cout << std::endl;
-		std::cout << matrix[i] << "  ";
-	}
-}
-
 /**
- * generate two uni-dimensional arrays of the specified type (float or double) and dimensions
+ * Generates two uni-dimensional arrays of the specified type (float or double) and dimensions
  * @param rows, inners, cols for dimensions of arrays
  * @param type specifies type of elements
 */
@@ -52,13 +45,6 @@ T* generateMatrix(size_t rows, size_t cols)
     }
 
     return matrix;
-}
-
-template<typename T>
-void headMatrix(T* matrix, int index){
-	for (int i = 0; i < index; ++i) {
-		std::cout << matrix[i] << "  ";
-    }
 }
 
 template<typename T>
