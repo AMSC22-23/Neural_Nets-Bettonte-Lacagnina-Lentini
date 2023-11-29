@@ -81,51 +81,6 @@ void cacheFriendlyMMM(const T* left,const T* right, T* result, size_t rows, size
     }
 }
 
-
-
-/**
- * //todo
- * 
- * @tparam T the type of values contained in the matrices.
- * 
- * @param left the left matrix.
- * @param right the right matrix.
- * @param result the resulting matrix.
- * @param rows number of rows of the left matrix.
- * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
- * @param columns number of columns of the right matrix.
-*/
-template<typename T>
-void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) 
-{
-    for(int innerTile = 0; innerTile < inners; innerTile += tileSize) {
-        for(int row = 0; row < rows; row++) {
-            int innerTileEnd = std::min(inners, innerTile + tileSize);
-            for(int inner = innerTile; inner < innerTileEnd; inner++) {
-                for(int column = 0; column < innerTileEnd; column++) {
-                    result[row * columns + column] +=
-                        left[row * inners + inner] * right[inner * columns + column];
-                }
-            }
-        }
-    }
- // Handle remaining rows and columns
-    if(rows % tileSize != 0 || columns % tileSize != 0) {
-        int startRow = (rows / tileSize) * tileSize;
-        int startColumn = (columns / tileSize) * tileSize;
-        for(int row = startRow; row < rows; row++) {
-            for(int column = startColumn; column < columns; column++) {
-                for(int inner = 0; inner < inners; inner++) {
-                    result[row * columns + column] +=
-                        left[row * inners + inner] * right[inner * columns + column];
-                }
-            }
-        }
-    }
-
-}
-
-
  /**
  * 
  * @tparam T the type of values contained in the matrices.
@@ -138,7 +93,6 @@ void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inne
  * @param columns number of columns of the right matrix.
  * @param unrollFactor
 */
-
 template<typename T>
 void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, int unrollFactor) 
 {
@@ -185,6 +139,71 @@ void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size
     }
 }
 
+
+/**
+ * //todo
+ * 
+ * @tparam T the type of values contained in the matrices.
+ * 
+ * @param left the left matrix.
+ * @param right the right matrix.
+ * @param result the resulting matrix.
+ * @param rows number of rows of the left matrix.
+ * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
+ * @param columns number of columns of the right matrix.
+*/
+template<typename T>
+void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) 
+{
+  for (size_t rowTile = 0; rowTile < rows; rowTile += tileSize) {
+    for (size_t columnTile = 0; columnTile < columns; columnTile += tileSize) {
+      for (size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
+        for (size_t row = rowTile; row < rowTile + tileSize; row++) {
+          size_t innerTileEnd = std::min(inners, innerTile + tileSize);
+            for (size_t inner = innerTile; inner < innerTileEnd; inner++) {
+                for (size_t col = columnTile; col < columnTile + tileSize; col++) {
+                    result[row * columns + col] += 
+                        left[row * inners + inner] * right[inner * columns + col];
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+      
+
+
+
+
+/**
+ * //todo
+ * 
+ * @tparam T the type of values contained in the matrices.
+ * 
+ * @param left the left matrix.
+ * @param right the right matrix.
+ * @param result the resulting matrix.
+ * @param rows number of rows of the left matrix.
+ * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
+*/
+template<typename T>
+void parallelMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns)
+{
+    #pragma omp parallel for default(shared) num_threads(8)
+        for(size_t row = 0; row < rows; row++) {
+            for(size_t col = 0; col < columns; col++) {
+                for(size_t inner = 0; inner < inners; inner++) {
+                    result[row * columns + col] += 
+                        left[row * columns + inner] * right[inner * columns + col];
+                }
+            }
+    }
+}
+
 /**
  * //TODO
  * 
@@ -198,18 +217,21 @@ void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size
  * @param columns number of columns of the right matrix.
  * @param tileSize  //TODO
 */
-
 template<typename T>
-void ompMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
-#pragma omp parallel for shared(result, left, right, rows, inners, columns, tileSize) default(none) \
+void highPerfomanceMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
+#pragma omp parallel for simd shared(result, left, right, rows, inners, columns, tileSize) default(none) \
 	 collapse(2) num_threads(8)
-  for (size_t rowTile = 0; rowTile < rows; rowTile += 256) {
-    for (size_t columnTile = 0; columnTile < columns; columnTile += 256) {
+  for (size_t rowTile = 0; rowTile < rows; rowTile += tileSize) {
+    for (size_t columnTile = 0; columnTile < columns; columnTile += tileSize) {
+        #pragma omp simd
       for (size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
-        for (size_t row = rowTile; row < rowTile + 256; row++) {
+            #pragma omp simd
+        for (size_t row = rowTile; row < rowTile + tileSize; row++) {
           size_t innerTileEnd = std::min(inners, innerTile + tileSize);
+          #pragma omp simd
           for (size_t inner = innerTile; inner < innerTileEnd; inner++) {
-            for (size_t col = columnTile; col < columnTile + 256; col++) {
+            #pragma omp simd
+            for (size_t col = columnTile; col < columnTile + tileSize; col++) {
               result[row * columns + col] += 
                     left[row * inners + inner] * right[inner * columns + col];
             }

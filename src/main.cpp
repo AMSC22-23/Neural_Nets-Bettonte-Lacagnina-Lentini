@@ -15,16 +15,17 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
 int main (){
 
     int unrollFactor = 8;
-	  size_t tileSize = 4;
+	  size_t tileSize = 64;
     size_t rows, inners, columns;
     
     char type;
     
     //ask for rows, inners and columns (dimensions of matrices)
     std::cout << "Insert dimensions" << std::endl; 
-    std::cout << "rows: " ; std::cin >> rows; 
-    std::cout << "inners: " ; std::cin >> inners;
-    std::cout << "columns: "; std::cin >> columns;
+    std::cout << "rows of the left matrix: " ; std::cin >> rows; 
+    std::cout << "columns of the left matrix = (columns of the right one): " ; std::cin >> inners;
+    std::cout << "columns of the right matrix: "; std::cin >> columns;
+  
     
     //ask for type of elements (float or double)
     do{
@@ -37,7 +38,7 @@ int main (){
     	auto *left = generateMatrix<float>(rows, columns);
     	auto *right = generateMatrix<float>(inners, columns);
       float *result = new float[rows * columns];
-
+      
       testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
     }
     
@@ -76,6 +77,13 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
         }
     })->Iterations(1);
 
+    benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns, &unrollFactor](benchmark::State& state) {
+      resetMatrix(result, rows * columns); 
+        for (auto _ : state) {
+            loopUnrollingMMM(left, right, result, rows, inners, columns, unrollFactor);
+          }
+    })->Iterations(1);
+
 
   benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
       resetMatrix(result, rows * columns); 
@@ -85,18 +93,17 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
     })->Iterations(1);
 
 
-  benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns, &unrollFactor](benchmark::State& state) {
-    resetMatrix(result, rows * columns); 
+benchmark::RegisterBenchmark("BM_parallelMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
+    resetMatrix(result, rows * columns);   
       for (auto _ : state) {
-          loopUnrollingMMM(left, right, result, rows, inners, columns, unrollFactor);
-          }
-    })->Iterations(1);
-
+           parallelMMM(left, right, result, rows, inners, columns);
+        }
+   })->Iterations(1);
   
   benchmark::RegisterBenchmark("BM_ompMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
     resetMatrix(result, rows * columns);   
       for (auto _ : state) {
-           ompMMM(left, right, result, rows, inners, columns, tileSize);
+           highPerfomanceMMM(left, right, result, rows, inners, columns, tileSize);
         }
    })->Iterations(1);
   
