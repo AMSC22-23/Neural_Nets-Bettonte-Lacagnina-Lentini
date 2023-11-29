@@ -56,7 +56,7 @@ void resetMatrix(T* matrix, int len){
 template<typename T>
 void printMatrixCSV(const T* matrix, size_t rows, size_t cols) 
 {
-		int i, j;
+		int i;
 		int dimension = rows * cols;
 		std::ofstream file("result.csv");
 
