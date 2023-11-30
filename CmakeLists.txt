@@ -10,7 +10,7 @@ include_directories(.)
 
 find_package(OpenMP REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-O3 -Wall -Werror -Wpedantic -Wcast-align -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces")
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Werror -Wpedantic -Wcast-align -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -fconcepts")
 
 # To include GoogleBenchmark
 include(FetchContent)

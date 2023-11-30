@@ -1,3 +1,5 @@
+#include <omp.h>
+
 /**
  * Computes the multiplication between two matrices by computing the inner 
  * product between the rows of the left matrix and the columns of the 
@@ -13,8 +15,7 @@
  * @param columns number of columns of the right matrix.
 */
 template<typename T>
-void naiveMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) 
-{
+void naiveMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     for(size_t row = 0; row < rows; row++) {
         for(size_t col = 0; col < columns; col++) {
             for(size_t inner = 0; inner < inners; inner++) {
@@ -27,10 +28,9 @@ void naiveMMM(const T* left,const T* right, T* result, size_t rows, size_t inner
 
 
 /**
- * Computes the multiplication between two matrices by computing the inner 
- * product between the rows of the left matrix and the columns of the
- * right matrix. The inner product is performed in a variable
- * so that the update is done by accessing a register.
+ * Computes the multiplication between two matrices,
+ * by computing the inner product between the rows of the left matrix and the columns of the right matrix.
+ * The inner product is performed in a variable so that the update is done by accessing a register.
  * 
  * @tparam T the type of values contained in the matrices.
  * 
@@ -42,8 +42,7 @@ void naiveMMM(const T* left,const T* right, T* result, size_t rows, size_t inner
  * @param columns number of columns of the right matrix.
 */
 template<typename T>
-void naiveAccMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) 
-{
+void naiveAccMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     for(size_t row = 0; row < rows; row++) {
         for(size_t col = 0; col < columns; col++) {
             T acc = T(); //T acc{};
@@ -57,7 +56,7 @@ void naiveAccMMM(const T* left,const T* right, T* result, size_t rows, size_t in
 
 
 /**
- * //todo
+ * //TODO
  * 
  * @tparam T the type of values contained in the matrices.
  * 
@@ -69,8 +68,7 @@ void naiveAccMMM(const T* left,const T* right, T* result, size_t rows, size_t in
  * @param columns number of columns of the right matrix.
 */
 template<typename T>
-void cacheFriendlyMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) 
-{
+void cacheFriendlyMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     for(size_t row = 0; row < rows; row++) {
         for(size_t inner = 0; inner < inners; inner++) {
             for(size_t col = 0; col < columns; col++) {
@@ -81,8 +79,9 @@ void cacheFriendlyMMM(const T* left,const T* right, T* result, size_t rows, size
     }
 }
 
+
  /**
- * 
+ * TODO
  * @tparam T the type of values contained in the matrices.
  * 
  * @param left the left matrix.
@@ -91,14 +90,12 @@ void cacheFriendlyMMM(const T* left,const T* right, T* result, size_t rows, size
  * @param rows number of rows of the left matrix.
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
  * @param columns number of columns of the right matrix.
- * @param unrollFactor
+ * @param unrollFactor TODO
 */
 template<typename T>
-void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, int unrollFactor) 
-{
+void loopUnrollingMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, int unrollFactor) {
     size_t row;
     size_t col;
-    size_t inner;
     // Ciclo principale
     for (row = 0; row < rows; row++) {
         for (col = 0; col < columns; col++) {
@@ -113,7 +110,7 @@ void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size
                 	result[row * columns + col] += left[row * inners + inner + 2] * right[(inner + 2) * columns + col];
                 	result[row * columns + col] += left[row * inners + inner + 3] * right[(inner + 3) * columns + col];
         		}
-        		//remaining elememnts
+        		//remaining elements
         		
             	for (; inner < inners ; inner++)
                 	result[row * columns + col] += left[row * inners + inner] * right[inner * columns + col];
@@ -141,7 +138,7 @@ void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size
 
 
 /**
- * //todo
+ * TODO
  * 
  * @tparam T the type of values contained in the matrices.
  * 
@@ -151,15 +148,15 @@ void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size
  * @param rows number of rows of the left matrix.
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
  * @param columns number of columns of the right matrix.
+ * @param tileSize TODO
 */
 template<typename T>
-void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) 
-{
-    for(int innerTile = 0; innerTile < inners; innerTile += tileSize) {
-        for(int row = 0; row < rows; row++) {
-            int innerTileEnd = std::min(inners, innerTile + tileSize);
-            for(int inner = innerTile; inner < innerTileEnd; inner++) {
-                for(int column = 0; column < columns; column++) {
+void tilingMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
+    for(size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
+        for(size_t row = 0; row < rows; row++) {
+            size_t innerTileEnd = std::min(inners, innerTile + tileSize);
+            for(size_t inner = innerTile; inner < innerTileEnd; inner++) {
+                for(size_t column = 0; column < columns; column++) {
                     result[row * columns + column] += 
                         left[row * inners + inner] * right[inner * columns + column];
                 }
@@ -169,8 +166,8 @@ void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inne
 }
 
 /**
- * //todo
- * 
+ * TODO
+ *
  * @tparam T the type of values contained in the matrices.
  * 
  * @param left the left matrix.
@@ -180,8 +177,7 @@ void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inne
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
 */
 template<typename T>
-void parallelMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns)
-{
+void parallelMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     #pragma omp parallel for default(shared) num_threads(8)
         for(size_t row = 0; row < rows; row++) {
             for(size_t col = 0; col < columns; col++) {
@@ -193,8 +189,9 @@ void parallelMMM(const T* left,const T* right, T* result, size_t rows, size_t in
     }
 }
 
+
 /**
- * //TODO
+ * TODO
  * 
  * @tparam T the type of values contained in the matrices.
  * 
@@ -204,10 +201,10 @@ void parallelMMM(const T* left,const T* right, T* result, size_t rows, size_t in
  * @param rows number of rows of the left matrix.
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
  * @param columns number of columns of the right matrix.
- * @param tileSize  //TODO
+ * @param tileSize  TODO
 */
 template<typename T>
-void highPerfomanceMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
+void highPerformanceMMM (const T* left, const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
 #pragma omp parallel for simd shared(result, left, right, rows, inners, columns, tileSize) default(none) \
 	 collapse(2) num_threads(8)
   for (size_t rowTile = 0; rowTile < rows; rowTile += tileSize) {
