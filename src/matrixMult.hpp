@@ -157,7 +157,7 @@ void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inne
 {
     for(int innerTile = 0; innerTile < inners; innerTile += tileSize) {
         for(int row = 0; row < rows; row++) {
-            int innerTileEnd = std::min(inners, innersTile + tileSize);
+            int innerTileEnd = std::min(inners, innerTile + tileSize);
             for(int inner = innerTile; inner < innerTileEnd; inner++) {
                 for(int column = 0; column < columns; column++) {
                     result[row * columns + column] += 
