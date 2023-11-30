@@ -155,29 +155,18 @@ void loopUnrollingMMM(const T* left,const T* right, T* result, size_t rows, size
 template<typename T>
 void tilingMMM(const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) 
 {
-  for (size_t rowTile = 0; rowTile < rows; rowTile += tileSize) {
-    for (size_t columnTile = 0; columnTile < columns; columnTile += tileSize) {
-      for (size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
-        for (size_t row = rowTile; row < rowTile + tileSize; row++) {
-          size_t innerTileEnd = std::min(inners, innerTile + tileSize);
-            for (size_t inner = innerTile; inner < innerTileEnd; inner++) {
-                for (size_t col = columnTile; col < columnTile + tileSize; col++) {
-                    result[row * columns + col] += 
-                        left[row * inners + inner] * right[inner * columns + col];
+    for(int innerTile = 0; innerTile < inners; innerTile += tileSize) {
+        for(int row = 0; row < rows; row++) {
+            int innerTileEnd = std::min(inners, innersTile + tileSize);
+            for(int inner = innerTile; inner < innerTileEnd; inner++) {
+                for(int column = 0; column < columns; column++) {
+                    result[row * columns + column] += 
+                        left[row * inners + inner] * right[inner * columns + column];
+                }
             }
-          }
         }
-      }
     }
-  }
 }
-
-
-
-      
-
-
-
 
 /**
  * //todo
