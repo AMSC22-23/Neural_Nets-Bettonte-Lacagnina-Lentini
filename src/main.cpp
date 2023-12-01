@@ -1,5 +1,6 @@
 #include <iostream>
 #include <benchmark/benchmark.h>
+#include <cblas.h>
 
 #include "matrixMult.hpp"
 #include "matrixManagement.hpp"
@@ -24,7 +25,6 @@ int main (){
     std::cin >> inners;
     std::cout << "columns of the right matrix: "; std::cin >> columns;
 
-
     //ask for type of elements (float or double)
     do {
     	std::cout << "Insert type of elements (f/d): "; 
@@ -33,21 +33,18 @@ int main (){
 
     //allocate two uni-dimensional arrays and fill them randomly
     if (type == 'f') {
-
     	auto *left = generateMatrix<float>(rows, columns);
     	auto *right = generateMatrix<float>(inners, columns);
         float *result = new float[rows * columns];
-      
-      testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
+        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
     }
     
     if (type == 'd') {
-
     	auto *left = generateMatrix<double>(rows, inners);
     	auto *right = generateMatrix<double>(inners, columns);
     	double *result = new double[rows * columns];
 
-      testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
+        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
     }
 
     return 0;
@@ -118,7 +115,7 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
             highPerformanceMMM(left, right, result, rows, inners, columns, tileSize);
     })->Iterations(1);
 
-
+    
   //Run all lambda functions
   benchmark::RunSpecifiedBenchmarks();
 

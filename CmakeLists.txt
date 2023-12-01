@@ -10,7 +10,9 @@ include_directories(.)
 
 find_package(OpenMP REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-O3 -Wall -Werror -Wpedantic -Wcast-align -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -fconcepts")
+find_package(OpenBLAS REQUIRED)
+
+#set(CMAKE_CXX_FLAGS "-O3 -Wall -Werror -Wpedantic -Wcast-align -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -fconcepts")
 
 # To include GoogleBenchmark
 include(FetchContent)
@@ -29,3 +31,10 @@ target_link_libraries(Neural_nets PRIVATE benchmark::benchmark)
 target_link_libraries(Neural_nets PRIVATE OpenMP::OpenMP_CXX)
 
 
+if(OpenBLAS_FOUND)
+    message("OpenBLAS found")
+    include_directories(${OpenBLAS_INCLUDE_DIRS})
+    target_link_libraries(Neural_nets PRIVATE ${OpenBLAS_LIBRARIES})
+else()
+    message(FATAL_ERROR "OpenBLAS not found")
+endif()
