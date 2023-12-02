@@ -9,11 +9,12 @@ template<typename T>
 void compareMatrix (size_t rows, size_t cols, T* result1, T* result2) {
 
 	size_t size = rows*cols;
-	size_t i = 0;
+	size_t i;
 
     for(i = 0; i < size; i++) {
-        if(result1[i] != result2[i])
+        if(result1[i] != result2[i]) {
             break;
+        }
     }
 
     if(i == size) 
@@ -36,7 +37,7 @@ T* generateMatrix (size_t rows, size_t cols) {
     unsigned int seed = static_cast<unsigned int>(std::chrono::duration_cast<std::chrono::milliseconds>(currentTime.time_since_epoch()).count());
     
     std::mt19937 gen(seed); // Generator based on Mersenne Twister
-    std::uniform_real_distribution<T> distribution(0.0, 100000.0); // uniform distribution between 0 and 100k
+    std::uniform_real_distribution<T> distribution(0.0, 1000.0); // uniform distribution between 0 and 100k
 	
 	T* matrix = new T[dimension];
 	for (size_t i = 0; i < dimension; ++i) {

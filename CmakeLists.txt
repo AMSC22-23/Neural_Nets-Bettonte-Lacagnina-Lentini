@@ -12,7 +12,7 @@ find_package(OpenMP REQUIRED)
 
 find_package(OpenBLAS REQUIRED)
 
-#set(CMAKE_CXX_FLAGS "-O3 -Wall -Werror -Wpedantic -Wcast-align -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -fconcepts")
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Werror -Wpedantic -Wcast-align -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -fconcepts")
 
 # To include GoogleBenchmark
 include(FetchContent)

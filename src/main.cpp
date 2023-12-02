@@ -5,7 +5,7 @@
 #include "matrixMult.hpp"
 #include "matrixManagement.hpp"
 
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize);
+void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize, auto cblas);
 
 /**
  * Initialise randomly two matrices and call functions performing matrix-matrix multiplication,
@@ -33,18 +33,40 @@ int main (){
 
     //allocate two uni-dimensional arrays and fill them randomly
     if (type == 'f') {
-    	auto *left = generateMatrix<float>(rows, columns);
-    	auto *right = generateMatrix<float>(inners, columns);
+    	const float *left = generateMatrix<float>(rows, columns);
+    	const float *right = generateMatrix<float>(inners, columns);
         float *result = new float[rows * columns];
-        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
+
+        auto cblas = [](const float *A, const float *B, float *output, size_t rows_A, size_t inners_A_B, size_t cols_B) {
+            cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_A, cols_B, inners_A_B, 1.0f, A, rows_A, B, inners_A_B, 0.0f, output,rows_A);
+        };
+
+        //Check output
+        cblas(left,right,result,rows,inners,columns);
+        float *result = new float[rows*columns];
+        naiveMMM(left,right,result2,rows,inners,columns);
+        compareMatrix(rows,columns,result,result2);
+
+        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize,cblas);
     }
-    
+
     if (type == 'd') {
-    	auto *left = generateMatrix<double>(rows, inners);
-    	auto *right = generateMatrix<double>(inners, columns);
+    	const double *left = generateMatrix<double>(rows, inners);
+    	const double *right = generateMatrix<double>(inners, columns);
     	double *result = new double[rows * columns];
 
-        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize);
+        auto cblas = [](const double *A, const double *B, double *output, size_t rows_A, size_t inners_A_B, size_t cols_B) {
+            cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_A, cols_B, inners_A_B, 1.0, A, rows_A, B, inners_A_B, 0.0, output,rows_A);
+        };
+
+        //Check output
+        cblas(left,right,result,rows,inners,columns);
+        double *result = new double[rows*columns];
+        naiveMMM(left,right,result2,rows,inners,columns);
+        compareMatrix(rows,columns,result,result2);
+
+        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize,cblas);
+
     }
 
     return 0;
@@ -64,8 +86,9 @@ int main (){
  * @param columns number of columns of the right matrix.
  * @param unrollFactor TODO
  * @param tileSize TODO
+ * @param cblas lambda expression which contains float or double openBlas implementation.
 */
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize) {
+void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize, auto cblas) {
 
     benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
@@ -115,12 +138,19 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
             highPerformanceMMM(left, right, result, rows, inners, columns, tileSize);
     })->Iterations(1);
 
-    
-  //Run all lambda functions
-  benchmark::RunSpecifiedBenchmarks();
 
-  //delete pointers
-  delete[] left;
-  delete[] right;
-  delete[] result;
+    benchmark::RegisterBenchmark("BM_openBlasMMM", [&left, &right, &result, &rows, &inners, &columns, &cblas](benchmark::State& state) {
+        resetMatrix(result, rows * columns);
+        for (auto _ : state)
+            cblas(left, right, result, rows, inners, columns);
+    })->Iterations(1);
+
+
+    //Run all lambda functions
+    benchmark::RunSpecifiedBenchmarks();
+
+    //delete pointers
+    delete[] left;
+    delete[] right;
+    delete[] result;
 }
