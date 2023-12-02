@@ -43,7 +43,7 @@ int main (){
 
         //Check output
         cblas(left,right,result,rows,inners,columns);
-        float *result = new float[rows*columns];
+        float *result2 = new float[rows*columns];
         naiveMMM(left,right,result2,rows,inners,columns);
         compareMatrix(rows,columns,result,result2);
 
@@ -61,7 +61,7 @@ int main (){
 
         //Check output
         cblas(left,right,result,rows,inners,columns);
-        double *result = new double[rows*columns];
+        double *result2 = new double[rows*columns];
         naiveMMM(left,right,result2,rows,inners,columns);
         compareMatrix(rows,columns,result,result2);
 
