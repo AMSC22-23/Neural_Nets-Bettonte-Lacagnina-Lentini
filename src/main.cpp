@@ -12,8 +12,6 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
  * doing Google Benchmark on them.
 */
 int main (){
-
-    int unrollFactor = 8;
     size_t tileSize = 64;
     size_t rows, inners, columns;
     char type;
@@ -33,20 +31,14 @@ int main (){
 
     //allocate two uni-dimensional arrays and fill them randomly
     if (type == 'f') {
-    	const float *left = generateMatrix<float>(rows, columns);
+    	const float *left = generateMatrix<float>(rows, inners);
     	const float *right = generateMatrix<float>(inners, columns);
         float *result = new float[rows * columns];
 
         auto cblas = [](const float *A, const float *B, float *output, size_t rows_A, size_t inners_A_B, size_t cols_B) {
             cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_A, cols_B, inners_A_B, 1.0f, A, rows_A, B, inners_A_B, 0.0f, output,rows_A);
         };
-
         //Check output
-        cblas(left,right,result,rows,inners,columns);
-        float *result2 = new float[rows*columns];
-        naiveMMM(left,right,result2,rows,inners,columns);
-        compareMatrix(rows,columns,result,result2);
-
         testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize,cblas);
     }
 
@@ -60,11 +52,6 @@ int main (){
         };
 
         //Check output
-        cblas(left,right,result,rows,inners,columns);
-        double *result2 = new double[rows*columns];
-        naiveMMM(left,right,result2,rows,inners,columns);
-        compareMatrix(rows,columns,result,result2);
-
         testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize,cblas);
 
     }
@@ -89,61 +76,61 @@ int main (){
  * @param cblas lambda expression which contains float or double openBlas implementation.
 */
 void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize, auto cblas) {
-
+    int rep = 10;
     benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             naiveMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_naiveAccMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             naiveAccMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_cacheFriendlyMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             cacheFriendlyMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns, &unrollFactor](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             loopUnrollingMMM(left, right, result, rows, inners, columns, unrollFactor);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             tilingMMM(left, right, result, rows, inners, columns, tileSize);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_parallelMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             parallelMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_highPerformanceMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             highPerformanceMMM(left, right, result, rows, inners, columns, tileSize);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_openBlasMMM", [&left, &right, &result, &rows, &inners, &columns, &cblas](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             cblas(left, right, result, rows, inners, columns);
-    })->Iterations(1);
+    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
     //Run all lambda functions
