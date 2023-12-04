@@ -5,16 +5,19 @@
 #include "matrixMult.hpp"
 #include "matrixManagement.hpp"
 
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize, auto cblas);
+void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, size_t tileSize, auto cblas);
 
 /**
  * Initialise randomly two matrices and call functions performing matrix-matrix multiplication,
  * doing Google Benchmark on them.
 */
-int main (){
+int main (int argc, char* argv[]){
     size_t tileSize = 64;
     size_t rows, inners, columns;
     char type;
+    
+
+    ::benchmark::Initialize(&argc, argv);
     
     //ask for rows, inners and columns (dimensions of matrices)
     std::cout << "Insert dimensions" << std::endl; 
@@ -39,7 +42,7 @@ int main (){
             cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_A, cols_B, inners_A_B, 1.0f, A, rows_A, B, inners_A_B, 0.0f, output,rows_A);
         };
         //Check output
-        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize,cblas);
+        testBench(left,right,result,rows,inners,columns,tileSize,cblas);
     }
 
     if (type == 'd') {
@@ -52,7 +55,7 @@ int main (){
         };
 
         //Check output
-        testBench(left,right,result,rows,inners,columns,unrollFactor,tileSize,cblas);
+        testBench(left,right,result,rows,inners,columns,tileSize,cblas);
 
     }
 
@@ -71,11 +74,10 @@ int main (){
  * @param rows number of rows of the left matrix.
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
  * @param columns number of columns of the right matrix.
- * @param unrollFactor TODO
  * @param tileSize TODO
  * @param cblas lambda expression which contains float or double openBlas implementation.
 */
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, int unrollFactor, size_t tileSize, auto cblas) {
+void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, size_t tileSize, auto cblas) {
     int rep = 10;
     benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
@@ -98,10 +100,10 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
     })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 
-    benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns, &unrollFactor](benchmark::State& state) {
+    benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
-            loopUnrollingMMM(left, right, result, rows, inners, columns, unrollFactor);
+            loopUnrollingMMM(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
 
 

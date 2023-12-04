@@ -1,4 +1,3 @@
-
 //#define UNROLL_FACTOR 8
 #include <omp.h>
 
@@ -94,10 +93,9 @@ void cacheFriendlyMMM (const T* left,const T* right, T* result, size_t rows, siz
  * @param rows number of rows of the left matrix.
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
  * @param columns number of columns of the right matrix.
- * @param unrollFactor TODO
 */
 template<typename T>
-void loopUnrollingMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, int unrollFactor) {
+void loopUnrollingMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     size_t row;
     size_t col;
     size_t inner;
