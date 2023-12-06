@@ -103,7 +103,7 @@ void loopUnrollingMMM (const T* left,const T* right, T* result, size_t rows, siz
 
     for(row = 0; row < rows; row++) {
         for(col = 0; col < columns; col++) {
-            #pragma GCC unroll 8
+            #pragma GCC unroll 18
             for(inner = 0; inner < inners; inner++) {
                 result[row * columns + col] += 
                     left[row * columns + inner] * right[inner * columns + col];
@@ -127,8 +127,8 @@ void loopUnrollingMMM (const T* left,const T* right, T* result, size_t rows, siz
  * @param columns number of columns of the right matrix.
  * @param tileSize TODO
 */
-template<typename T>
-void tilingMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
+template<size_t tileSize, typename T>
+void tilingMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     for(size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
         for(size_t row = 0; row < rows; row++) {
             size_t innerTileEnd = std::min(inners, innerTile + tileSize);
@@ -180,20 +180,15 @@ void parallelMMM (const T* left,const T* right, T* result, size_t rows, size_t i
  * @param columns number of columns of the right matrix.
  * @param tileSize  TODO
 */
-template<typename T>
-void highPerformanceMMM (const T* left, const T* right, T* result, size_t rows, size_t inners, size_t columns, size_t tileSize) {
-#pragma omp parallel for simd shared(result, left, right, rows, inners, columns, tileSize) default(none) \
-	 collapse(2) num_threads(8)
+template<size_t tileSize, typename T>
+void highPerformanceMMM (const T* left, const T* right, T* result, size_t rows, size_t inners, size_t columns) {
+#pragma omp parallel for simd shared(result, left, right, rows, inners, columns) default(none) num_threads(8) collapse(2)
   for (size_t rowTile = 0; rowTile < rows; rowTile += tileSize) {
     for (size_t columnTile = 0; columnTile < columns; columnTile += tileSize) {
-        #pragma omp simd
       for (size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
-            #pragma omp simd
         for (size_t row = rowTile; row < rowTile + tileSize; row++) {
           size_t innerTileEnd = std::min(inners, innerTile + tileSize);
-          #pragma omp simd
           for (size_t inner = innerTile; inner < innerTileEnd; inner++) {
-            #pragma omp simd
             for (size_t col = columnTile; col < columnTile + tileSize; col++) {
               result[row * columns + col] += 
                     left[row * inners + inner] * right[inner * columns + col];

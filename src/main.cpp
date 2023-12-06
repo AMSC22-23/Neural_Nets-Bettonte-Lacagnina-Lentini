@@ -4,17 +4,19 @@
 
 #include "matrixMult.hpp"
 #include "matrixManagement.hpp"
+void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, auto cblas, int reps);
 
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, size_t tileSize, auto cblas);
+constexpr size_t tileSize = 16;
+
 
 /**
  * Initialise randomly two matrices and call functions performing matrix-matrix multiplication,
  * doing Google Benchmark on them.
 */
 int main (int argc, char* argv[]){
-    size_t tileSize = 64;
     size_t rows, inners, columns;
     char type;
+    int repetitions;
     
 
     ::benchmark::Initialize(&argc, argv);
@@ -25,6 +27,7 @@ int main (int argc, char* argv[]){
     std::cout << "columns of the left matrix = (columns of the right one): " ;
     std::cin >> inners;
     std::cout << "columns of the right matrix: "; std::cin >> columns;
+    std::cout << "Insert test repetitions " ; std::cin >> repetitions;
 
     //ask for type of elements (float or double)
     do {
@@ -42,7 +45,7 @@ int main (int argc, char* argv[]){
             cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_A, cols_B, inners_A_B, 1.0f, A, rows_A, B, inners_A_B, 0.0f, output,rows_A);
         };
         //Check output
-        testBench(left,right,result,rows,inners,columns,tileSize,cblas);
+        testBench(left,right,result,rows,inners,columns,cblas, repetitions);
     }
 
     if (type == 'd') {
@@ -55,7 +58,7 @@ int main (int argc, char* argv[]){
         };
 
         //Check output
-        testBench(left,right,result,rows,inners,columns,tileSize,cblas);
+        testBench(left,right,result,rows,inners,columns,cblas, repetitions);
 
     }
 
@@ -77,62 +80,61 @@ int main (int argc, char* argv[]){
  * @param tileSize TODO
  * @param cblas lambda expression which contains float or double openBlas implementation.
 */
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, size_t tileSize, auto cblas) {
-    int rep = 10;
+void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns,  auto cblas, int repetitions) {
     benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             naiveMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_naiveAccMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             naiveAccMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_cacheFriendlyMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             cacheFriendlyMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
-            loopUnrollingMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+            loopUnrollingMMM<>(left, right, result, rows, inners, columns);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
-    benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
+    benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
-            tilingMMM(left, right, result, rows, inners, columns, tileSize);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+            tilingMMM<tileSize>(left, right, result, rows, inners, columns);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_parallelMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             parallelMMM(left, right, result, rows, inners, columns);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
-    benchmark::RegisterBenchmark("BM_highPerformanceMMM", [&left, &right, &result, &rows, &inners, &columns, &tileSize](benchmark::State& state) {
+    benchmark::RegisterBenchmark("BM_highPerformanceMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
-            highPerformanceMMM(left, right, result, rows, inners, columns, tileSize);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+            highPerformanceMMM<tileSize>(left, right, result, rows, inners, columns);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
     benchmark::RegisterBenchmark("BM_openBlasMMM", [&left, &right, &result, &rows, &inners, &columns, &cblas](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             cblas(left, right, result, rows, inners, columns);
-    })->Iterations(1)->Repetitions(rep)->DisplayAggregatesOnly(true);
+    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
 
     //Run all lambda functions
