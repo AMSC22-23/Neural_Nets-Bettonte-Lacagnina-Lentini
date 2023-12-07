@@ -59,7 +59,7 @@ int main (int argc, char* argv[]){
 
         //Check output
         testBench(left,right,result,rows,inners,columns,cblas, repetitions);
-
+        
     }
 
     return 0;
@@ -101,13 +101,13 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
             cacheFriendlyMMM(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
-
+/*
     benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             loopUnrollingMMM<>(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
-
+*/
 
     benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
