@@ -1,22 +1,19 @@
-//#define UNROLL_FACTOR 8
 #include <omp.h>
 
-
-
 /**
- * Computes the multiplication between two matrices by computing the inner 
- * product between the rows of the left matrix and the columns of the 
- * right matrix.
+ * This function performs matrix multiplication by iterating through each element of the resulting matrix
+ * and calculating the dot product of the corresponding row in the left matrix and the corresponding column
+ * in the right matrix. The result is stored in the provided result matrix.
  * 
- * @tparam T the type of values contained in the matrices.
+ * @param left    Pointer to the left matrix
+ * @param right   Pointer to the right matrix
+ * @param result  Pointer to the result matrix
+ * @param rows    Number of rows in the left matrix
+ * @param inners  Number of columns in the left matrix and rows in the right matrix
+ * @param columns Number of columns in the right matrix
  * 
- * @param left the left matrix.
- * @param right the right matrix.
- * @param result the resulting matrix.
- * @param rows number of rows of the left matrix.
- * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
- * @param columns number of columns of the right matrix.
-*/
+ * @tparam T      Type of the matrix elements
+ */
 template<typename T>
 void naiveMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     for(size_t row = 0; row < rows; row++) {
@@ -35,14 +32,14 @@ void naiveMMM (const T* left,const T* right, T* result, size_t rows, size_t inne
  * by computing the inner product between the rows of the left matrix and the columns of the right matrix.
  * The inner product is performed in a variable so that the update is done by accessing a register.
  * 
- * @tparam T the type of values contained in the matrices.
+ * @param left      Pointer to the first matrix.
+ * @param right     Pointer to the second matrix.
+ * @param result    Pointer to the resulting matrix.
+ * @param rows      Number of rows in the matrices.
+ * @param inners    Number of columns in the first matrix and rows in the second matrix.
+ * @param columns   Number of columns in the matrices.
  * 
- * @param left the left matrix.
- * @param right the right matrix.
- * @param result the resulting matrix.
- * @param rows number of rows of the left matrix.
- * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
- * @param columns number of columns of the right matrix.
+ * @tparam T        Type of the matrix elements.
 */
 template<typename T>
 void naiveAccMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
@@ -59,16 +56,17 @@ void naiveAccMMM (const T* left,const T* right, T* result, size_t rows, size_t i
 
 
 /**
- * //TODO
+ * This method performs the matrix multiplication in a cache-friendly manner by accessing the elements of 
+ * the matrices in a sequential manner. 
  * 
- * @tparam T the type of values contained in the matrices.
+ * @param left      Pointer to the first matrix.
+ * @param right     Pointer to the second matrix.
+ * @param result    Pointer to the resulting matrix.
+ * @param rows      Number of rows in the matrices.
+ * @param inners    Number of columns in the first matrix and rows in the second matrix.
+ * @param columns   Number of columns in the matrices.
  * 
- * @param left the left matrix.
- * @param right the right matrix.
- * @param result the resulting matrix.
- * @param rows number of rows of the left matrix.
- * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
- * @param columns number of columns of the right matrix.
+ * @tparam T        Type of the matrix elements.
 */
 template<typename T>
 void cacheFriendlyMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
@@ -115,18 +113,20 @@ void loopUnrollingMMM (const T* left,const T* right, T* result, size_t rows, siz
 
 
 /**
- * TODO
+ * This method performs the matrix multiplication using tiling optimization.
+ * The tiling optimization divides the computation into smaller tiles to improve cache utilization.
+ * The size of each tile is determined by the 'tileSize' template parameter.
  * 
- * @tparam T the type of values contained in the matrices.
+ * @param left      Pointer to the left matrix.
+ * @param right     Pointer to the right matrix.
+ * @param result    Pointer to the result matrix.
+ * @param rows      Number of rows in the matrices.
+ * @param inners    Number of inner dimensions in the matrices.
+ * @param columns   Number of columns in the matrices.
  * 
- * @param left the left matrix.
- * @param right the right matrix.
- * @param result the resulting matrix.
- * @param rows number of rows of the left matrix.
- * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
- * @param columns number of columns of the right matrix.
- * @param tileSize TODO
-*/
+ * @tparam tileSize The size of each tile for tiling optimization.
+ * @tparam T        The data type of the matrices.
+ */
 template<size_t tileSize, typename T>
 void tilingMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
     for(size_t innerTile = 0; innerTile < inners; innerTile += tileSize) {
@@ -143,15 +143,18 @@ void tilingMMM (const T* left,const T* right, T* result, size_t rows, size_t inn
 }
 
 /**
- * TODO
+ * This method performs the matrix multiplication following the approach described in the 
+ * naiveMMM tempate function, but optimizing it using OpenMP directives to achieve parallel
+ * computation.
  *
- * @tparam T the type of values contained in the matrices.
+ * @param left      Pointer to the first matrix.
+ * @param right     Pointer to the second matrix.
+ * @param result    Pointer to the resulting matrix.
+ * @param rows      Number of rows in the matrices.
+ * @param inners    Number of columns in the first matrix and rows in the second matrix.
+ * @param columns   Number of columns in the matrices.
  * 
- * @param left the left matrix.
- * @param right the right matrix.
- * @param result the resulting matrix.
- * @param rows number of rows of the left matrix.
- * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
+ * @tparam T        Type of the matrix elements.
 */
 template<typename T>
 void parallelMMM (const T* left,const T* right, T* result, size_t rows, size_t inners, size_t columns) {
