@@ -5,11 +5,15 @@ import re
 
 reports_directory = '../report'
 
+# Data sets that will contain the data to plot coming from the report files in report directory.
+# Each data set is a list of dictionaries. Each dictionary contains the name of the benchmark as key 
+# and a list of tuples (matrix size, time) as value.
 dataSet_f = []
 dataSet_d = []
 dataSet_fOpt = []
 dataSet_dOpt = []
 
+# Patterns used to identify the report files containing the data to plot.
 pattern1 = r'f.json'
 pattern2 = r'd.json'
 pattern3 = r'fOpt.json'
@@ -17,17 +21,27 @@ pattern4 = r'dOpt.json'
 
 def main():
     initialiseDataSets('report.json')
-    # print(dataSet_f)
     for filename in os.listdir(reports_directory):
             addData(filename)
-    # print(dataSet_f)
     plotData(dataSet_f, 'plot_f.png')
     plotData(dataSet_d, 'plot_d.png')
     plotData(dataSet_fOpt, 'plot_fOpt.png')
-    plotData(dataSet_dOpt,  'plot_dOpt.png')
+    plotData(dataSet_dOpt, 'plot_dOpt.png')
 
 
 def initialiseDataSets(filename):
+    """
+    This function reads a reference JSON file and extracts the benchmark names from it. 
+    It then initializes four data sets (dataSet_f, dataSet_d, dataSet_fOpt, dataSet_dOpt) 
+    with empty lists for each unique benchmark name. The data sets are  used for storing data 
+    related to different benchmarks.
+    
+    Args:
+        filename (str): The name of the reference JSON file.
+        
+    Returns:
+        None
+    """
     benchmark_list = []
     file_path = os.path.join(reports_directory, filename)
     with open(file_path, 'r') as file:
@@ -43,6 +57,15 @@ def initialiseDataSets(filename):
             
             
 def addData(filename):
+    """
+    Add the data contained in the json file filename to the data sets.
+    
+    Args:
+        filename (str): The name of the json file containing the data to add. 
+    
+    Returns:
+        None   
+    """
     file_path = os.path.join(reports_directory, filename)
     with open(file_path, 'r') as file:
         data = json.load(file)
@@ -55,6 +78,15 @@ def addData(filename):
                      
                         
 def chooseDataSet(filename):
+    """
+    Choose the appropriate data set depending on the filaname.
+    
+    Args:
+        filename (str): The name of the json file.
+        
+    Returns:
+        list: The appropriate data set.
+    """
     if re.search(pattern1, filename):
         return dataSet_f
     elif re.search(pattern2, filename):
@@ -65,8 +97,18 @@ def chooseDataSet(filename):
         return dataSet_dOpt
     else:
         return None
+               
                     
 def extractNumber(filename):
+    """
+    Extract the matrix size from the filename.
+    
+    Args:
+        filename (str): The name of the json file.
+    
+    Returns:
+        int: The matrix size.
+    """
     match = re.search(r'report(\d+)[a-zA-Z]?(\w*).json', filename)
     if match:
         number = int(match.group(1))
@@ -76,12 +118,31 @@ def extractNumber(filename):
 
 
 def orderData(dataSet):
+    """
+    Order the data in the data set by matrix size.
+    
+    Args:
+        dataSet (list): The data set to order.
+    
+    Returns:    
+        None
+    """
     for item in dataSet:
         for key, value in item.items():
             value.sort(key=lambda tup: tup[0])
 
 
 def plotData(dataSet, output_file_name):
+    """
+    Plot the data contained in the data set.
+    
+    Args:
+        dataSet (list): The data set to plot.
+        output_file_name (str): The name of the output file.
+    
+    Returns:
+        None
+    """
     plt.figure()
     orderData(dataSet)
     for item in dataSet:
@@ -102,6 +163,15 @@ def plotData(dataSet, output_file_name):
 
 
 def typeName(dataSet):
+    """
+    Return the type of data contained in the data set.
+    
+    Args:
+        dataSet (list): The data set.
+    
+    Returns:
+        str: The type of data.
+    """
     if dataSet == dataSet_f:
         return 'Float '
     elif dataSet == dataSet_d:
@@ -112,5 +182,6 @@ def typeName(dataSet):
         return 'Double optimised '
     else:
         return None
+
 
 main()
