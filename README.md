@@ -13,13 +13,13 @@ In particular, we utilized SIMD approch, loop unroll technique, OpenMp features 
 To test them we used Google Benchmark library, and we saved the results in some reports file.
 We exclusively concentrated on square matrices with elements of type float or double. 
 We only considered the following dimensions:
-    * 16x16
-    * 32x32
-    * 64x64
-    * 128x128
-    * 512x512
-    * 1024x1024
-    * 2048x2048
+     (16x16)
+     (32x32)
+     (64x64)
+     (128x128)
+     (512x512)
+     (1024x1024)
+     (2048x2048)
 
 HOW TO COMPILE
 
