@@ -29,13 +29,11 @@ int main (int argc, char* argv[]){
     std::cout << "columns of the right matrix: "; std::cin >> columns;
     std::cout << "Insert test repetitions " ; std::cin >> repetitions;
 
-    //ask for type of elements (float or double)
     do {
     	std::cout << "Insert type of elements (f/d): "; 
     	std::cin >> type;
     } while (type !='f' && type != 'd');
 
-    //allocate two uni-dimensional arrays and fill them randomly
     if (type == 'f') {
     	const float *left = generateMatrix<float>(rows, inners);
     	const float *right = generateMatrix<float>(inners, columns);
@@ -44,7 +42,6 @@ int main (int argc, char* argv[]){
         auto cblas = [](const float *A, const float *B, float *output, size_t rows_A, size_t inners_A_B, size_t cols_B) {
             cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_A, cols_B, inners_A_B, 1.0f, A, rows_A, B, inners_A_B, 0.0f, output,rows_A);
         };
-        //Check output
         testBench(left,right,result,rows,inners,columns,cblas, repetitions);
     }
 
@@ -56,10 +53,7 @@ int main (int argc, char* argv[]){
         auto cblas = [](const double *A, const double *B, double *output, size_t rows_A, size_t inners_A_B, size_t cols_B) {
             cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows_A, cols_B, inners_A_B, 1.0, A, rows_A, B, inners_A_B, 0.0, output,rows_A);
         };
-
-        //Check output
         testBench(left,right,result,rows,inners,columns,cblas, repetitions);
-        
     }
 
     return 0;
@@ -87,13 +81,11 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
             naiveMMM(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
-
     benchmark::RegisterBenchmark("BM_naiveAccMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             naiveAccMMM(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
-
 
     benchmark::RegisterBenchmark("BM_cacheFriendlyMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
@@ -101,20 +93,11 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
             cacheFriendlyMMM(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
-/*
-    benchmark::RegisterBenchmark("BM_loopUnrollingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
-        resetMatrix(result, rows * columns);
-        for (auto _ : state)
-            loopUnrollingMMM<>(left, right, result, rows, inners, columns);
-    })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
-*/
-
     benchmark::RegisterBenchmark("BM_tilingMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             tilingMMM<tileSize>(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
-
 
     benchmark::RegisterBenchmark("BM_parallelMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
@@ -122,13 +105,11 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
             parallelMMM(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
-
     benchmark::RegisterBenchmark("BM_highPerformanceMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
             highPerformanceMMM<tileSize>(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
-
 
     benchmark::RegisterBenchmark("BM_openBlasMMM", [&left, &right, &result, &rows, &inners, &columns, &cblas](benchmark::State& state) {
         resetMatrix(result, rows * columns);
@@ -136,11 +117,9 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
             cblas(left, right, result, rows, inners, columns);
     })->Iterations(1)->Repetitions(repetitions)->DisplayAggregatesOnly(true);
 
-
-    //Run all lambda functions
     benchmark::RunSpecifiedBenchmarks();
+    printMatrixCSV (result, rows, columns);
 
-    //delete pointers
     delete[] left;
     delete[] right;
     delete[] result;
