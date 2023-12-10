@@ -23,6 +23,40 @@ We only considered the following dimensions:
 
 ## Build with Cmake
 
+This project uses CMake as its build system, follow the steps below to build the project using it.
+
+### Prerequisites
+
+- CMake (version 3.20 or higher)
+- OpenMP
+- OpenBLAS
+
+### Building the project
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/AMSC22-23/Neural_Nets-Bettonte-Lacagnina-Lentini.git
+   cd Neural_Nets-Bettone-Lacagnina-Lentini
+
+2. **Create a Build Directory**
+   ```bash
+   mkdir build
+   cd build
+
+3. **Configure the project**
+   ```bash
+   cmake .. -DCMAKE_BUILD_TYPE=Release
+
+4. **Build the project**
+   ```bash
+   make
+
+5. **Run the executable**
+   ```bash
+   ./Neural_Nets
+
+**IMPORTANT**: by default, Google benchmark builds as a debug library. In order to run it as a release library instead, we have to add the flag `DCMAKE_BUILD_TYPE=Release` in the cmake command at step 3.
+
 
 ## HOW TO EXECUTE 
 
