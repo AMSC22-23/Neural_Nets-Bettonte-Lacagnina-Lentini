@@ -12,6 +12,7 @@ In this project, we explored variuos well-known techniques used in matrix matrix
 To test them we used Google Benchmark library, and we saved the results in some reports file.
 
 We exclusively concentrated on square matrices containing elements of type float or double. 
+
 To obtain consistent results, the dimensions of the matrices should be a power of 2.
 
 ## Build with CMake
@@ -48,7 +49,7 @@ This project uses CMake as its build system, follow the steps below to build the
    ```bash
    ./Neural_Nets
 
-**IMPORTANT**: by default, Google benchmark builds as a debug library. In order to run it as a release library instead, we have to add the flag `DCMAKE_BUILD_TYPE=Release` in the cmake command at step 3.
+**IMPORTANT**: by default, Google Benchmark builds as a debug library. In order to run it as a release library instead, we have to add the flag `DCMAKE_BUILD_TYPE=Release` in the cmake command at step 3. For more informations see [Google Benchmark](https://github.com/google/benchmark)
 
 
 ## How to execute
@@ -61,11 +62,11 @@ The number of test repetitions will impact on the output of the program, in part
 
 To save the results produced by the benchmark, it is necessary to add the flag  `-benchmark_out=filename` when running the executable.
 > [!NOTE]
-> Save the output files in the report directory in order to plot them with the plotting.py script.
+> Save the output files in the report directory in order to plot them with the [plotting.py](https://github.com/AMSC22-23/Neural_Nets-Bettonte-Lacagnina-Lentini/blob/main/src/plotting.py) script.
 
 
 ## Reporting results
-The JSON files in the report directory contain the results produced by Google benchmark coming from our testing.
+The JSON files in the **report** directory contain the results produced by Google Benchmark coming from our testing.
 The naming convention we adopted is
 `
 reportXYZ.json
@@ -83,6 +84,6 @@ To plot the data contained in the report files, type on the terminal in the `src
 python3 plotting.py
 ```
 The plots shown will also be saved in the plots/report directory.
-> [!WARNING]
+> [!NOTE]
 > It is necessary to have installed python3 and the matplotlib library to run the script.
  
