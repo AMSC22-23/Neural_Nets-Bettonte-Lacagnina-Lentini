@@ -11,17 +11,10 @@ This means exploring parallel programming, exploting specific libraries, and pay
 In this project, we explored variuos well-known techniques used in matrix matrix multiplication; we analyzed them individually, as well in combination, and at the end we analyzed the results and performance; in particular, we utilized SIMD approach, loop unroll technique, OpenMp features and cache-friendly management.
 To test them we used Google Benchmark library, and we saved the results in some reports file.
 
-We exclusively concentrated on square matrices with elements of type float or double, having the following dimensions:
+We exclusively concentrated on square matrices containing elements of type float or double. 
+To obtain consistent results, the dimensions of the matrices should be a power of 2.
 
-- (16x16)
-- (32x32)
-- (64x64)
-- (128x128)
-- (512x512)
-- (1024x1024)
-- (2048x2048)
-
-## Build with Cmake
+## Build with CMake
 
 This project uses CMake as its build system, follow the steps below to build the project using it.
 
@@ -58,7 +51,17 @@ This project uses CMake as its build system, follow the steps below to build the
 **IMPORTANT**: by default, Google benchmark builds as a debug library. In order to run it as a release library instead, we have to add the flag `DCMAKE_BUILD_TYPE=Release` in the cmake command at step 3.
 
 
-## HOW TO EXECUTE 
+## How to execute
+Once the program is launched you will be asked to provide the following inputs:
+- Dimension of the matrices.
+- Type of matrices elements: insert **f** for float and **d** for double.
+- Number of test repetitions.
+
+The number of test repetitions will impact on the output of the program, in particular 1 repetition does not produce aggregate data (mean, value, standard deviation, cv).
+
+To save the results produced by the benchmark, it is necessary to add the flag  `-benchmark_out=filename` when running the executable.
+> [!NOTE]
+> Save the output files in the report directory in order to plot them with the plotting.py script.
 
 
 ## Reporting results
