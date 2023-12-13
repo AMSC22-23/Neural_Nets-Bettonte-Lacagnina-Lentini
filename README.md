@@ -2,33 +2,71 @@
 # Matrix multiplication on CPU
 
 The purpose of this project is to delve into the topic of matrix matrix multiplication, which is a highly relevant operation in many contexts.
-Real-world applications often involve the use of large matrices, presenting a significant challenge for computational efficiency.
+Real-world applications often involve the use of large matrices, which represent a significant challenge for computational efficiency.
 Machines must perform a high number of calculations, and the computation process can be slow and difficult.
 
 For these reasons, it is fondumental to manage large matrices and perform the multiplication between them in an intelligent way.
 This means exploring parallel programming, exploting specific libraries, and paying attention to the memory management of the system.
 
-In this project, we explored variuos well-known techniques used in matrix matrix multiplication; we tested them individually, as well in combination, and at the end we analyzed the results and performance.
-In particular, we utilized SIMD approch, loop unroll technique, OpenMp features and cache-friendly management.
+In this project, we explored variuos well-known techniques used in matrix matrix multiplication; we analyzed them individually, as well in combination, and at the end we analyzed the results and performance; in particular, we utilized SIMD approach, loop unroll technique, OpenMp features and cache-friendly management.
 To test them we used Google Benchmark library, and we saved the results in some reports file.
-We exclusively concentrated on square matrices with elements of type float or double. 
-We only considered the following dimensions:
-     (16x16)
-     (32x32)
-     (64x64)
-     (128x128)
-     (512x512)
-     (1024x1024)
-     (2048x2048)
 
-## Build with Cmake
+We exclusively concentrated on square matrices containing elements of type float or double. 
+
+To obtain consistent results, the dimensions of the matrices should be a power of 2.
+
+## Build with CMake
+
+This project uses CMake as its build system, follow the steps below to build the project using it.
+
+### Prerequisites
+
+- CMake (version 3.20 or higher)
+- OpenMP
+- OpenBLAS
+
+### Building the project
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/AMSC22-23/Neural_Nets-Bettonte-Lacagnina-Lentini.git
+   cd Neural_Nets-Bettone-Lacagnina-Lentini
+
+2. **Create a Build Directory**
+   ```bash
+   mkdir build
+   cd build
+
+3. **Configure the project**
+   ```bash
+   cmake .. -DCMAKE_BUILD_TYPE=Release
+
+4. **Build the project**
+   ```bash
+   make
+
+5. **Run the executable**
+   ```bash
+   ./Neural_Nets
+
+**IMPORTANT**: by default, Google Benchmark builds as a debug library. In order to run it as a release library instead, we have to add the flag `DCMAKE_BUILD_TYPE=Release` in the cmake command at step 3. For more informations see [Google Benchmark](https://github.com/google/benchmark)
 
 
-## HOW TO EXECUTE 
+## How to execute
+Once the program is launched you will be asked to provide the following inputs:
+- Dimension of the matrices.
+- Type of matrices elements: insert **f** for float and **d** for double.
+- Number of test repetitions.
+
+The number of test repetitions will impact on the output of the program, in particular 1 repetition does not produce aggregate data (mean, value, standard deviation, cv).
+
+To save the results produced by the benchmark, it is necessary to add the flag  `-benchmark_out=filename` when running the executable.
+> [!NOTE]
+> Save the output files in the report directory in order to plot them with the [plotting.py](https://github.com/AMSC22-23/Neural_Nets-Bettonte-Lacagnina-Lentini/blob/main/src/plotting.py) script.
 
 
 ## Reporting results
-The JSON files in the report directory contain the results produced by Google benchmark coming from our testing.
+The JSON files in the **report** directory contain the results produced by Google Benchmark coming from our testing.
 The naming convention we adopted is
 `
 reportXYZ.json
@@ -46,6 +84,11 @@ To plot the data contained in the report files, type on the terminal in the `src
 python3 plotting.py
 ```
 The plots shown will also be saved in the plots/report directory.
-> [!WARNING]
+> [!NOTE]
 > It is necessary to have installed python3 and the matplotlib library to run the script.
- 
+
+
+## Contributors
+- [Giorgio Bettonte](https://github.com/giorgiobettonte) 
+- [Marco Lacagnina](https://github.com/marcolacagnina)
+- [Fabio Lentini](https://github.com/fablnt)

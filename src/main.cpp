@@ -1,33 +1,57 @@
 #include <iostream>
+#include <limits>
 #include <benchmark/benchmark.h>
 #include <cblas.h>
 
 #include "matrixMult.hpp"
 #include "matrixManagement.hpp"
+
 void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, auto cblas, int reps);
 
 constexpr size_t tileSize = 16;
-
 
 /**
  * Initialise randomly two matrices and call functions performing matrix-matrix multiplication,
  * doing Google Benchmark on them.
 */
 int main (int argc, char* argv[]){
+
     size_t rows, inners, columns;
     char type;
     int repetitions;
-    
 
     ::benchmark::Initialize(&argc, argv);
     
     //ask for rows, inners and columns (dimensions of matrices)
-    std::cout << "Insert dimensions" << std::endl; 
-    std::cout << "rows of the left matrix: " ; std::cin >> rows; 
-    std::cout << "columns of the left matrix = (columns of the right one): " ;
-    std::cin >> inners;
-    std::cout << "columns of the right matrix: "; std::cin >> columns;
-    std::cout << "Insert test repetitions " ; std::cin >> repetitions;
+    std::cout << "Insert dimensions" << std::endl;
+
+    std::cout << "rows of the left matrix: ";
+    while (!(std::cin >> rows)) {
+        std::cout << "incorrect input, please enter an integer" << std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    std::cout << "columns of the left matrix = (columns of the right one): ";
+    while (!(std::cin >> inners)) {
+        std::cout << "incorrect input, please enter an integer" << std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    std::cout << "columns of the right matrix: ";
+    while (!(std::cin >> columns)) {
+        std::cout << "incorrect input, please enter an integer" << std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+
+    std::cout << "Insert test repetitions: ";
+    while (!(std::cin >> repetitions)) {
+        std::cout << "incorrect input, please enter an integer" << std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
 
     do {
     	std::cout << "Insert type of elements (f/d): "; 
