@@ -23,7 +23,6 @@ void compareMatrix (const size_t rows, const size_t cols, const T* result1, cons
         if(result1[i] != result2[i])
             break;
     
-     
     if(i == size) 
 		std::cout << "Matrici uguali" << std::endl;
     else 
@@ -33,6 +32,7 @@ void compareMatrix (const size_t rows, const size_t cols, const T* result1, cons
 
 /**
  * This function generates a uni-dimensional matrix of the specified type (float or double) and dimensions
+ * 
  * @param rows    Number of rows of the matrix.
  * @param cols    Number of columns of the matrix.
  * @param type    Specifies type of elements.
@@ -41,7 +41,6 @@ void compareMatrix (const size_t rows, const size_t cols, const T* result1, cons
 */
 template<typename T>
 T* generateMatrix (const size_t rows, const size_t cols) {
-
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	size_t dimension = rows * cols;
     unsigned int seed = static_cast<unsigned int>(std::chrono::duration_cast<std::chrono::milliseconds>(currentTime.time_since_epoch()).count());
@@ -58,9 +57,9 @@ T* generateMatrix (const size_t rows, const size_t cols) {
 }
 
 
-
 /**
- * This function sets elements of a matrix equal to zero
+ * This function sets elements of a matrix equal to zero.
+ * 
  * @param matrix  Matrix to modify.
  * @param len     Length of the uni-dimensional matrix.
  * 
@@ -75,6 +74,7 @@ void resetMatrix(T* matrix, const int len){
 
 /**
  * This function prints a matrix if a CSV file.
+ * 
  * @param matrix  Matrix to print.
  * @param rows    Number of rows in the matrix.
  * @param cols    Number of columns in the matrix.
@@ -95,8 +95,8 @@ void printMatrixCSV (const T* matrix, const size_t rows, const size_t cols) {
               file << ',';
         }
         file.close();
-
-    } else
+    } 
+    else
         std::cerr << "File not opened" << std::endl;
 }
 
