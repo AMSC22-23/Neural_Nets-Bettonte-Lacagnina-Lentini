@@ -25,9 +25,9 @@ void naiveMMM (const T* left, const T* right, T* result, const size_t rows, cons
 
 
 /**
- * Computes the multiplication between two matrices,
- * by computing the inner product between the rows of the left matrix and the columns of the right matrix.
- * The inner product is performed in a variable so that the update is done by accessing a register.
+ * Computes the multiplication between two matrices, by computing the inner product between the rows of the left matrix 
+ * and the columns of the right matrix. The inner product is performed in a variable so that the update is done 
+ * by accessing a register.
  * 
  * @param left      Pointer to the first matrix.
  * @param right     Pointer to the second matrix.
@@ -64,7 +64,7 @@ void naiveAccMMM (const T* left, const T* right, T* result, const size_t rows, c
  * @tparam T        Type of the matrix elements.
 */
 template<typename T>
-void cacheFriendlyMMM (const T* left, const T* right, T* result, size_t rows, size_t inners, size_t columns) {
+void cacheFriendlyMMM (const T* left, const T* right, T* result, const size_t rows, const size_t inners, const size_t columns) {
     for(size_t row = 0; row < rows; row++) 
         for(size_t inner = 0; inner < inners; inner++)
             for(size_t col = 0; col < columns; col++) 
@@ -84,8 +84,8 @@ void cacheFriendlyMMM (const T* left, const T* right, T* result, size_t rows, si
  * @param rows      Number of rows in the matrices.
  * @param inners    Number of inner dimensions in the matrices.
  * @param columns   Number of columns in the matrices.
- * @tparam          TileSize The size of each tile for tiling optimization.
  * 
+ * @tparam tileSize The size of each tile for tiling optimization.
  * @tparam T        Type of the matrix elements.     
  */
 template<size_t tileSize, typename T>
@@ -113,8 +113,6 @@ void tilingMMM (const T* left, const T* right, T* result, const size_t rows, con
  * @param columns   Number of columns in the matrices.
  * 
  * @tparam T        Type of the matrix elements.
- * 
- * 
 */
 template<typename T>
 void parallelMMM (const T* left, const T* right, T* result, const size_t rows, const size_t inners, const size_t columns) {
@@ -128,15 +126,16 @@ void parallelMMM (const T* left, const T* right, T* result, const size_t rows, c
 
 
 /**
- * This function is a sort of combination of the previous methods performing the matrix matrix multiplication 
+ * This function is a sort of combination of the previous methods performing the matrix matrix multiplication.
+ * 
  * @param left      Pointer to the first matrix.
  * @param right     Pointer to the second matrix.
  * @param result    Pointer to the resulting matrix.
  * @param rows      Number of rows of the left matrix.
  * @param inners    Number of columns of the first matrix, equal to the number of rows of the second matrix.
  * @param columns   Number of columns of the second  matrix.
- * @tparam          TileSize The size of each tile for tiling optimization.
  * 
+ * @tparam tileSize The size of each tile for tiling optimization.
  * @tparam T        Type of the matrix elements.
 */
 template<size_t tileSize, typename T>
