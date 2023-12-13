@@ -6,7 +6,7 @@
 #include "matrixMult.hpp"
 #include "matrixManagement.hpp"
 
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns, auto cblas, int reps);
+void testBench(const auto* left, const auto* right, auto* result, const size_t rows, const size_t inners, const size_t columns, auto cblas, const int reps);
 
 constexpr size_t tileSize = 16;
 
@@ -97,7 +97,7 @@ int main (int argc, char* argv[]){
  * @param cblas lambda expression which contains float or double openBlas implementation.
  * @param repetitions number of rep performed by Google Benchmark on all implementations.
 */
-void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns,  auto cblas, int repetitions) {
+void testBench(const auto* left, const auto* right, auto* result, const size_t rows, const size_t inners, const size_t columns,  auto cblas, const int repetitions) {
     benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
         resetMatrix(result, rows * columns);
         for (auto _ : state)
