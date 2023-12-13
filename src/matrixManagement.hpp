@@ -5,37 +5,10 @@
 #include <typeinfo>
 
 /**
- * This function compares two matrices in order to determine if they are equals or different.
- * 
- * @param result1  Pointer to the first matrix.
- * @param result1  Pointer to the first matrix.
- * @param rows     Number of rows of matrices.
- * @param columns  Number of columns of matrices.
- * 
- * @tparam T       Type of the matrix elements.
- */
-template<typename T>
-void compareMatrix (const size_t rows, const size_t cols, const T* result1, const T* result2) {
-    const size_t size = rows*cols;
-	size_t i;
-
-    for(i = 0; i < size; i++)
-        if(result1[i] != result2[i])
-            break;
-    
-    if(i == size) 
-		std::cout << "Matrici uguali" << std::endl;
-    else 
-		std::cout << "Matrici diverse" << std::endl;
-}
-
-
-/**
- * This function generates a uni-dimensional matrix of the specified type (float or double) and dimensions
+ * This function generates a uni-dimensional matrix of the specified dimensions.
  * 
  * @param rows    Number of rows of the matrix.
  * @param cols    Number of columns of the matrix.
- * @param type    Specifies type of elements.
  * 
  * @tparam T      Type of the matrix elements.
 */

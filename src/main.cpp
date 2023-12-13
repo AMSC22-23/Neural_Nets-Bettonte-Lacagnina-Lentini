@@ -11,8 +11,7 @@ void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners
 constexpr size_t tileSize = 16;
 
 /**
- * Initialise randomly two matrices and call functions performing matrix-matrix multiplication,
- * doing Google Benchmark on them.
+ * Initialise randomly two matrices and call functions performing matrix-matrix multiplication, doing Google Benchmark on them.
 */
 int main (int argc, char* argv[]){
 
@@ -84,7 +83,7 @@ int main (int argc, char* argv[]){
 }
 
 /**
- * Runs Google Benchmark to all implementations of matrix matrix multiplication;
+ * Runs Google Benchmark to all implementations of matrix matrix multiplication:
  * for each implementation it defines a lambda function, each of them is called at the end of the function.
  * The benchmark is performed for each function once.
  * Before executing each implementation the resulting matrix is reset so that the correct result is obtained.
@@ -95,8 +94,8 @@ int main (int argc, char* argv[]){
  * @param rows number of rows of the left matrix.
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
  * @param columns number of columns of the right matrix.
- * @param tileSize TODO
  * @param cblas lambda expression which contains float or double openBlas implementation.
+ * @param repetitions number of rep performed by Google Benchmark on all implementations.
 */
 void testBench(auto* left, auto* right, auto* result, size_t rows, size_t inners, size_t columns,  auto cblas, int repetitions) {
     benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {
