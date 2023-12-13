@@ -86,4 +86,9 @@ python3 plotting.py
 The plots shown will also be saved in the plots/report directory.
 > [!NOTE]
 > It is necessary to have installed python3 and the matplotlib library to run the script.
- 
+
+
+## Contributors
+- [Giorgio Bettonte](https://github.com/giorgiobettonte) 
+- [Marco Lacagnina](https://github.com/marcolacagnina)
+- [Fabio Lentini](https://github.com/fablnt)
