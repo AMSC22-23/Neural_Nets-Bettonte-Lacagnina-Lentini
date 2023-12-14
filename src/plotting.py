@@ -23,10 +23,10 @@ def main():
     initialiseDataSets('report.json')
     for filename in os.listdir(reports_directory):
             addData(filename)
-    plotData(dataSet_f, 'plot_f.png')
-    plotData(dataSet_d, 'plot_d.png')
-    plotData(dataSet_fOpt, 'plot_fOpt.png')
-    plotData(dataSet_dOpt, 'plot_dOpt.png')
+    plotData(dataSet_f, '../plots/plot_f.png')
+    plotData(dataSet_d, '../plots/plot_d.png')
+    plotData(dataSet_fOpt, '../plots/plot_fOpt.png')
+    plotData(dataSet_dOpt, '../plots/plot_dOpt.png')
 
 
 def initialiseDataSets(filename):
@@ -153,7 +153,7 @@ def plotData(dataSet, output_file_name):
             for pair in value:
                 x.append(pair[0])
                 y.append(pair[1])
-        plt.plot(x, y, label=key)
+        plt.loglog(x, y, label=key)
     plt.xlabel('Matrix size')
     plt.ylabel('Time (ns)')
     plt.title(typeName(dataSet) + ' Matrices multiplication')
