@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import re
 
-reports_directory = '../report'
+reports_directory = '../reports'
 
 # Data sets that will contain the data to plot coming from the report files in report directory.
 # Each data set is a list of dictionaries. Each dictionary contains the name of the benchmark as key 
