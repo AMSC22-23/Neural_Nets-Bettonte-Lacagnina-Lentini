@@ -38,18 +38,24 @@ This project uses CMake as its build system, follow the steps below to build the
    cd build
 
 3. **Configure the project**
+
+   To build with optimization flag (-OFast -march=native) you have to select this option
    ```bash
    cmake .. -DCMAKE_BUILD_TYPE=Release
-
-4. **Build the project**
+   ```
+   To build without optimization flag you have to select this option
+    ```bash
+   cmake .. -DCMAKE_BUILD_TYPE=Debug
+    ```
+    The default build is Release.
+   
+5. **Build the project**
    ```bash
    make
 
-5. **Run the executable**
+6. **Run the executable**
    ```bash
    ./Neural_Nets
-
-**IMPORTANT**: by default, Google Benchmark builds as a debug library. In order to run it as a release library instead, we have to add the flag `DCMAKE_BUILD_TYPE=Release` in the cmake command at step 3. For more informations see [Google Benchmark](https://github.com/google/benchmark)
 
 
 ## How to execute
