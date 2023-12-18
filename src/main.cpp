@@ -95,7 +95,7 @@ int main (int argc, char* argv[]){
  * @param inners number of columns of the left matrix, equal to the number of rows of the right matrix.
  * @param columns number of columns of the right matrix.
  * @param cblas lambda expression which contains float or double openBlas implementation.
- * @param repetitions number of rep performed by Google Benchmark on all implementations.
+ * @param repetitions number of rep performed by Google Benchmark on all implementations. 
 */
 void testBench(const auto* left, const auto* right, auto* result, const size_t rows, const size_t inners, const size_t columns,  auto cblas, const int repetitions) {
     benchmark::RegisterBenchmark("BM_naiveMMM", [&left, &right, &result, &rows, &inners, &columns](benchmark::State& state) {

@@ -126,7 +126,7 @@ void parallelMMM (const T* left, const T* right, T* result, const size_t rows, c
 
 
 /**
- * This function is a sort of combination of the previous methods performing the matrix matrix multiplication.
+ * This function combines the optimizations employed in the previous methods performing the matrix matrix multiplication.
  * 
  * @param left      Pointer to the first matrix.
  * @param right     Pointer to the second matrix.

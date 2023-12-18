@@ -46,7 +46,7 @@ void resetMatrix(T* matrix, const int len){
 
 
 /**
- * This function prints a matrix if a CSV file.
+ * This function prints a matrix in a CSV file.
  * 
  * @param matrix  Matrix to print.
  * @param rows    Number of rows in the matrix.

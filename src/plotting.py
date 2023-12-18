@@ -5,7 +5,7 @@ import re
 
 reports_directory = '../reports'
 
-# Data sets that will contain the data to plot coming from the report files in report directory.
+# Data sets that will contain the data to plot coming from the report files in the report directory.
 # Each data set is a list of dictionaries. Each dictionary contains the name of the benchmark as key 
 # and a list of tuples (matrix size, time) as value.
 dataSet_f = []
@@ -33,7 +33,7 @@ def initialiseDataSets(filename):
     """
     This function reads a reference JSON file and extracts the benchmark names from it. 
     It then initializes four data sets (dataSet_f, dataSet_d, dataSet_fOpt, dataSet_dOpt) 
-    with empty lists for each unique benchmark name. The data sets are  used for storing data 
+    with empty lists for each unique benchmark name. The data sets are used for storing data 
     related to different benchmarks.
     
     Args:
@@ -134,7 +134,7 @@ def orderData(dataSet):
 
 def plotData(dataSet, output_file_name):
     """
-    Plot the data contained in the data set.
+    Plot the data contained in the data set in loglog scale.
     
     Args:
         dataSet (list): The data set to plot.
